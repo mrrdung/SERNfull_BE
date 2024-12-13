@@ -4,6 +4,7 @@ import userController from "../controllers/userController";
 import doctorController from "../controllers/doctorController";
 import patientController from "../controllers/patientController";
 import specialtyController from "../controllers/specialtyController";
+import clinicController from "../controllers/clinicController";
 const router = express.Router();
 
 let initWebRouters = app => {
@@ -24,6 +25,7 @@ let initWebRouters = app => {
     router.delete("/api/delete-users", userController.handleDeleteNewUser);
     //API allcodes
     router.get("/api/allcodes", userController.getAllCode);
+    //API doctor
     router.get("/api/get-top-doctor", doctorController.getTopDoctorHome);
     router.get("/api/get-all-doctor", doctorController.getAllDoctors);
     router.post("/api/post-info-doctor", doctorController.postInfoDoctor);
@@ -33,6 +35,8 @@ let initWebRouters = app => {
     router.get("/api/get-extra-infor-doctor-by-id", doctorController.getExtraInforDoctorById);
     router.get("/api/get-profile-infor-doctor-by-id", doctorController.getProfileInforDoctorById);
 
+    router.get("/api/get-list-patient-for-doctor", doctorController.getListPatientForDoctor);
+    router.post("/api/send-remedy", doctorController.sendRemedy);
     // patient
     router.post("/api/post-book-appointment", patientController.postBookAppointment);
     router.post("/api/verify-book-appointment", patientController.verifyBookAppointment);
@@ -40,6 +44,10 @@ let initWebRouters = app => {
     router.post("/api/create-new-specialty", specialtyController.createNewSpecialty);
     router.get("/api/get-all-specialty", specialtyController.getAllSpecialty);
     router.get("/api/detail-specialty-by-id", specialtyController.getDetailSpecialtyById);
+    //clinic
+    router.post("/api/create-new-clinic", clinicController.createNewClinic);
+    router.get("/api/get-all-clinic", clinicController.getAllClinic);
+    router.get("/api/detail-clinic-by-id", clinicController.getDetailClinicById);
     return app.use("/", router);
 };
 

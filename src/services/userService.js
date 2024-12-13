@@ -6,17 +6,15 @@ const saltRounds = 10;
 const salt = bcrypt.genSaltSync(saltRounds);
 let handleUserLogin = (email, passWord) => {
     return new Promise(async (resolve, reject) => {
-
         try {
             let userData = {};
             let isExist = await checkUserEmail(email);
 
             if (isExist) {
                 let user = await db.User.findOne({
-                    attributes: ['email', 'firstName', 'lastName', 'roleId', 'password'],
+                    attributes: ["id", "email", "firstName", "lastName", "roleId", "password"],
                     where: { email: email },
-                    raw: true
-
+                    raw: true,
                 });
                 if (user) {
                     //compare password
@@ -24,81 +22,75 @@ let handleUserLogin = (email, passWord) => {
                     // console.log(user);
                     if (check) {
                         userData.errCode = 0;
-                        userData.message = "Pass Ok"
+                        userData.message = "Pass Ok";
                         delete user.password;
                         userData.user = user;
                     } else {
                         userData.errCode = 3;
-                        userData.message = "Pass Wrong"
+                        userData.message = "Pass Wrong";
                     }
                 } else {
                     userData.errCode = 2;
-                    userData.message = "Your not found"
+                    userData.message = "Your not found";
                 }
-
             } else {
                 //return error
                 userData.errCode = 1;
-                userData.message = "Your email isnt exist in your system. Plz try other email !"
-
+                userData.message = "Your email isnt exist in your system. Plz try other email !";
             }
-            resolve(userData)
+            resolve(userData);
         } catch (error) {
             reject(error);
         }
-
-
     });
-}
+};
 
-let checkUserEmail = (userEmail) => {
+let checkUserEmail = userEmail => {
     return new Promise(async (resolve, reject) => {
         try {
-            let user = await db.User.findOne(
-                { where: { email: userEmail } })
+            let user = await db.User.findOne({ where: { email: userEmail } });
 
             if (user) {
                 resolve(true);
             } else {
                 resolve(false);
             }
-
         } catch (error) {
-            reject(error)
+            reject(error);
         }
     });
-}
+};
 
-let getAllUser = (userId) => {
+let getAllUser = userId => {
     return new Promise(async (resolve, reject) => {
         try {
-            let users = '';
-            if (userId === 'ALL') {
+            let users = "";
+            if (userId === "ALL") {
                 users = await db.User.findAll();
             }
-            if (userId && userId !== 'ALL') {
+            if (userId && userId !== "ALL") {
                 users = await db.User.findOne({
                     where: { id: userId },
                     attributes: {
-                        exclude: ['password']
-                    }
+                        exclude: ["password"],
+                    },
                 });
             }
             resolve(users);
         } catch (error) {
             reject(error);
         }
-    })
-}
+    });
+};
 
-let createNewUser = (data) => {
+let createNewUser = data => {
     return new Promise(async (resolve, reject) => {
         try {
             let check = await checkUserEmail(data.email);
             if (check === true) {
                 resolve({
                     errCode: 1,
-                    errMessage: "Your email is aready used PLZ try another email!"
+                    errMessage: "Your email is aready used PLZ try another email!",
                 });
             } else {
                 let haspasswordbybciipt = await hasUserPassWord(data.password);
@@ -114,36 +106,35 @@ let createNewUser = (data) => {
                     gender: data.gender,
                     roleId: data.roleId,
                     positionId: data.positionId,
-                    image: data.avatar
+                    image: data.avatar,
                 });
 
                 resolve({
                     errCode: 0,
-                    errMessage: "Create new user ok!"
+                    errMessage: "Create new user ok!",
                 });
             }
-
-
         } catch (e) {
             reject(e);
         }
-    })
-}
+    });
+};
 
-let updateUser = (data) => {
+let updateUser = data => {
     return new Promise(async (resolve, reject) => {
         try {
-            console.log('check data nodejs', data);
+            console.log("check data nodejs", data);
 
             if (!data.id || !data.roleId || !data.positionId || !data.gender) {
                 resolve({
                     errCode: 2,
-                    errMessage: "Missing required parameted"
+                    errMessage: "Missing required parameted",
                 });
             }
             let user = await db.User.findOne({
-                where: { id: data.id }, raw: false
-            })
+                where: { id: data.id },
+                raw: false,
+            });
             if (user) {
                 user.firstName = data.firstName;
                 user.lastName = data.lastName;
@@ -156,69 +147,65 @@ let updateUser = (data) => {
                     user.image = data.avatar;
                 }
 
-                await user.save()
+                await user.save();
                 resolve({
                     errCode: 0,
-                    errMessage: "update ok"
+                    errMessage: "update ok",
                 });
             } else {
                 resolve({
                     errCode: 1,
-                    errMessage: "k tim thay user"
+                    errMessage: "k tim thay user",
                 });
-
             }
         } catch (e) {
             reject(e);
         }
-    })
-}
+    });
+};
 
-let deleteUser = (userId) => {
+let deleteUser = userId => {
     return new Promise(async (resolve, reject) => {
         try {
             let userdelete = await db.User.findOne({
-                where: { id: userId }
+                where: { id: userId },
             });
             if (!userdelete) {
                 resolve({
                     errCode: 2,
-                    errMessage: "user not found"
-                })
+                    errMessage: "user not found",
+                });
             }
 
             await db.User.destroy({
-                where: { id: userId }
+                where: { id: userId },
             });
             resolve({
                 errCode: 0,
-                errMessage: "delete ok"
-            })
-
+                errMessage: "delete ok",
+            });
         } catch (e) {
             reject(e);
         }
-    })
-}
-let hasUserPassWord = (password) => {
+    });
+};
+let hasUserPassWord = password => {
     return new Promise(async (resolve, reject) => {
-
         try {
             let passwordhas = await bcrypt.hashSync(password, salt);
             resolve(passwordhas);
-
         } catch (error) {
             reject(error);
         }
     });
-}
+};
 
-let getAllCodeService = (inputType) => {
+let getAllCodeService = inputType => {
     return new Promise(async (resolve, reject) => {
         try {
             let res = {};
             let allcode = await db.Allcode.findAll({
-                where: { type: inputType }
+                where: { type: inputType },
             });
             res.errCode = 0;
             res.data = allcode;
@@ -226,8 +213,8 @@ let getAllCodeService = (inputType) => {
         } catch (e) {
             reject(e);
         }
-    })
-}
+    });
+};
 module.exports = {
     handleUserLogin: handleUserLogin,
     checkUserEmail: checkUserEmail,
@@ -235,7 +222,5 @@ module.exports = {
     createNewUser: createNewUser,
     updateUser: updateUser,
     deleteUser: deleteUser,
-    getAllCodeService: getAllCodeService
-}
-
-
+    getAllCodeService: getAllCodeService,
+};

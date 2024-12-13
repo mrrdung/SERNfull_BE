@@ -11,7 +11,15 @@ let buildUrlEmail = (doctorId, token) => {
 let postBookAppointmentSV = async data => {
     return new Promise(async (resolve, reject) => {
         try {
-            if (!data.email || !data.doctorId || !data.timeType || !data.birthday) {
+            if (
+                !data.email ||
+                !data.doctorId ||
+                !data.timeType ||
+                !data.birthday ||
+                !data.fullName ||
+                !data.address ||
+                !data.gender
+            ) {
                 resolve({
                     errCode: 1,
                     errMessage: "Missing require a parameter",
@@ -26,12 +34,15 @@ let postBookAppointmentSV = async data => {
                     language: data.language,
                     redirectLink: buildUrlEmail(data.doctorId, token),
                 });
+                //upsert patient
                 let user = await db.User.findOrCreate({
                     where: { email: data.email },
                     defaults: {
                         email: data.email,
-
                         roleId: "R3",
+                        firstName: data.fullName,
+                        address: data.address,
+                        gender: data.gender,
                     },
                 });
 
