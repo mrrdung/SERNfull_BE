@@ -47,17 +47,26 @@ let postBookAppointmentSV = async data => {
                 });
 
                 if (user && user[0]) {
-                    await db.Booking.findOrCreate({
-                        where: { patientId: user[0].id },
-                        defaults: {
-                            statusId: "s1",
-                            doctorId: data.doctorId,
-                            patientId: user[0].id,
-                            birthday: data.birthday,
-                            timeType: data.timeType,
-                            date: data.date,
-                            token: token,
-                        },
+                    // await db.Booking.findOrCreate({
+                    //     where: { patientId: user[0].id,  },
+                    //     defaults: {
+                    //         statusId: "s1",
+                    //         doctorId: data.doctorId,
+                    //         patientId: user[0].id,
+                    //         birthday: data.birthday,
+                    //         timeType: data.timeType,
+                    //         date: data.date,
+                    //         token: token,
+                    //     },
+                    // });
+                    await db.Booking.create({
+                        statusId: "s1",
+                        doctorId: data.doctorId,
+                        patientId: user[0].id,
+                        birthday: data.birthday,
+                        timeType: data.timeType,
+                        date: data.date,
+                        token: token,
                     });
                 }
                 resolve({

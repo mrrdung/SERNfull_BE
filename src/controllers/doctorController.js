@@ -54,6 +54,13 @@ let getDetailDoctorById = async (req, res) => {
         });
     }
 };
+let getDetailHistoryById = async (req, res) => {
+    try {
+        let infor = await doctorService.getDetailHistoryById(req.query.id);
+
+        return res.status(200).json(infor);
+    } catch (error) {}
+};
 let bulkCreateSchedule = async (req, res) => {
     try {
         let infor = await doctorService.bulkCreateScheduleSv(req.body);
@@ -138,4 +145,5 @@ module.exports = {
     getProfileInforDoctorById,
     getListPatientForDoctor,
     sendRemedy,
+    getDetailHistoryById,
 };

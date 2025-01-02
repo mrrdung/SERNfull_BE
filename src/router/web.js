@@ -48,6 +48,8 @@ let initWebRouters = app => {
     router.post("/api/create-new-clinic", clinicController.createNewClinic);
     router.get("/api/get-all-clinic", clinicController.getAllClinic);
     router.get("/api/detail-clinic-by-id", clinicController.getDetailClinicById);
+    //booking
+    router.get("/api/get-history-patient-by-id", doctorController.getDetailHistoryById);
     return app.use("/", router);
 };
 

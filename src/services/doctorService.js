@@ -409,6 +409,8 @@ let getListPatientForDoctorSV = (doctorId, date) => {
 };
 let sendRemedySV = data => {
     return new Promise(async (resolve, reject) => {
+        console.log("dddd", data);
+
         try {
             if (!data.email || !data.doctorId || !data.patientId || !data.timeType) {
                 resolve({
@@ -427,10 +429,44 @@ let sendRemedySV = data => {
                     raw: false,
                 });
                 if (appointment) {
+                    await db.History.create({
+                        doctorId: data.doctorId,
+                        patientId: data.patientId,
+                        description: data.notePar,
+                        files: data.date,
+                    });
+                }
+                if (appointment) {
                     appointment.statusId = "S3";
                     await appointment.save();
+                    //save history
                 }
                 //send email
+                resolve({
+                    errCode: 0,
+                    data: data,
+                });
+            }
+        } catch (e) {
+            reject(e);
+        }
+    });
+};
+let getDetailHistoryById = inputId => {
+    return new Promise(async (resolve, reject) => {
+        try {
+            if (!inputId) {
+                resolve({
+                    errCode: 1,
+                    errMessage: "Missing required parameter",
+                });
+            } else {
+                let data = await db.History.findAll({
+                    where: { patientId: inputId },
+                });
+                if (!data) {
+                    data = {};
+                }
                 resolve({
                     errCode: 0,
                     data: data,
@@ -452,4 +488,5 @@ module.exports = {
     getProfileInforDoctorByIdSV,
     getListPatientForDoctorSV,
     sendRemedySV,
+    getDetailHistoryById,
 };
